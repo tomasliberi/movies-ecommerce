@@ -3,7 +3,13 @@ package com.liberi.movies;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.liberi.movies.repository.CarritoRepository;
+import com.liberi.movies.repository.CategoriaRepository;
+import com.liberi.movies.repository.DetalleOrdenRepository;
+import com.liberi.movies.repository.ItemCarritoRepository;
+import com.liberi.movies.repository.OrdenRepository;
 import com.liberi.movies.repository.ProductoRepository;
+import com.liberi.movies.repository.UsuarioRepository;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -24,11 +30,35 @@ class MoviesApplicationTests {
     @Autowired
     private ProductoRepository productoRepository;
 
+    @Autowired
+    private ItemCarritoRepository itemCarritoRepository;
+
+    @Autowired
+    private DetalleOrdenRepository detalleOrdenRepository;
+
+    @Autowired
+    private CarritoRepository carritoRepository;
+
+    @Autowired
+    private OrdenRepository ordenRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private CategoriaRepository categoriaRepository;
+
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
     @BeforeEach
     void limpiarRepositorio() {
+        detalleOrdenRepository.deleteAll();
+        itemCarritoRepository.deleteAll();
+        ordenRepository.deleteAll();
+        carritoRepository.deleteAll();
         productoRepository.deleteAll();
+        usuarioRepository.deleteAll();
+        categoriaRepository.deleteAll();
     }
 
     @Test

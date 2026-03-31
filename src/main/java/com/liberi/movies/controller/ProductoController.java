@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,7 +26,16 @@ public class ProductoController {
     }
 
     @GetMapping
-    public List<Producto> obtenerTodos() {
+    public List<Producto> obtenerTodos(
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false) Long categoriaId,
+            @RequestParam(required = false) Double precioMin,
+            @RequestParam(required = false) Double precioMax,
+            @RequestParam(required = false) Boolean disponibles
+    ) {
+        if (nombre != null || categoriaId != null || precioMin != null || precioMax != null || disponibles != null) {
+            return productoService.buscarProductos(nombre, categoriaId, precioMin, precioMax, disponibles);
+        }
         return productoService.obtenerTodos();
     }
 

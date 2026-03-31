@@ -20,6 +20,12 @@ public class ProductoService {
         return productoRepository.findAll();
     }
 
+    public List<Producto> buscarProductos(String nombre, Long categoriaId, Double precioMin, Double precioMax,
+                                          Boolean disponibles) {
+        return productoRepository.buscarConFiltros(nombre, categoriaId, precioMin, precioMax,
+                Boolean.TRUE.equals(disponibles));
+    }
+
     public Producto obtenerPorId(Long id) {
         return productoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado"));
@@ -36,6 +42,8 @@ public class ProductoService {
         productoExistente.setDescripcion(productoActualizado.getDescripcion());
         productoExistente.setPrecio(productoActualizado.getPrecio());
         productoExistente.setStock(productoActualizado.getStock());
+        productoExistente.setImagenUrl(productoActualizado.getImagenUrl());
+        productoExistente.setCategoria(productoActualizado.getCategoria());
         return productoRepository.save(productoExistente);
     }
 
