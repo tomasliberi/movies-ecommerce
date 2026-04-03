@@ -142,9 +142,13 @@ Posibles respuestas:
 
 ## Base de datos
 
-- Base SQL: `H2`
-- Tipo: persistente en archivo local
-- URL: `jdbc:h2:file:./data/moviesdb`
+- Base SQL: `MySQL`
+- Tipo: externa
+- URL por defecto: `jdbc:mysql://localhost:3306/moviesdb?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=America/Argentina/Buenos_Aires`
+- Variables de entorno opcionales:
+  - `DB_URL`
+  - `DB_USERNAME`
+  - `DB_PASSWORD`
 
 ## Scripts SQL
 
@@ -155,7 +159,7 @@ Posibles respuestas:
 
 - `spring-boot-starter-web`
 - `spring-boot-starter-data-jpa`
-- `h2`
+- `mysql-connector-j`
 - `spring-boot-starter-test`
 
 ## ORM
@@ -171,6 +175,12 @@ Se usa JPA/Hibernate para mapear las entidades principales del ecommerce:
 - `Usuario` incluye `username` y `rol` para distinguir comprador, vendedor o admin
 
 ## Ejecutar el proyecto
+
+Primero crear la base en MySQL:
+
+```sql
+CREATE DATABASE moviesdb;
+```
 
 En Windows:
 
