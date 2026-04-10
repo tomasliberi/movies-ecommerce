@@ -67,6 +67,30 @@ class MoviesApplicationTests {
 
     @Test
     void deberiaCrearYListarProductos() throws Exception {
+        String registerBody = """
+                {
+                  "username": "vendedor",
+                  "nombre": "Vale",
+                  "apellido": "Paz",
+                  "email": "vendedor@movies.com",
+                  "password": "secreto123",
+                  "rol": "VENDEDOR",
+                  "direccion": "Av Siempre Viva 742"
+                }
+                """;
+
+        HttpResponse<String> registerResponse = httpClient.send(
+                HttpRequest.newBuilder()
+                        .uri(URI.create(baseUrl() + "/auth/register"))
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(registerBody))
+                        .build(),
+                HttpResponse.BodyHandlers.ofString()
+        );
+
+        assertEquals(HttpStatus.CREATED.value(), registerResponse.statusCode());
+        String token = extraerToken(registerResponse.body());
+
         String body = """
                 {
                   "nombre": "Combo cine",
@@ -80,6 +104,7 @@ class MoviesApplicationTests {
                 HttpRequest.newBuilder()
                         .uri(URI.create(baseUrl() + "/productos"))
                         .header("Content-Type", "application/json")
+                        .header("Authorization", "Bearer " + token)
                         .POST(HttpRequest.BodyPublishers.ofString(body))
                         .build(),
                 HttpResponse.BodyHandlers.ofString()
@@ -103,5 +128,12 @@ class MoviesApplicationTests {
 
     private String baseUrl() {
         return "http://localhost:" + port;
+    }
+
+    private String extraerToken(String responseBody) {
+        String marker = "\"token\":\"";
+        int start = responseBody.indexOf(marker);
+        int end = responseBody.indexOf("\"", start + marker.length());
+        return responseBody.substring(start + marker.length(), end);
     }
 }
