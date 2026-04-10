@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
-public class JwtService {
+public class JwtService { // Esta clase se encarga de generar y validar los tokens JWT, asi como de extraer información de ellos
 
     private final SecretKey signingKey; // Clave secreta para firmar los tokens 
     private final long expirationMillis; // Tiempo de expiración del token

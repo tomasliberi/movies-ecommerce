@@ -1,33 +1,112 @@
 # E-commerce de Peliculas
 
-Pruebas en Insomnia o Postman
+API REST desarrollada con Spring Boot para la gestion de usuarios, categorias, productos, carrito y ordenes, con persistencia en MySQL y seguridad con JWT.
 
-## Codigos HTTP
+## Tecnologias
+
+- Java 17
+- Spring Boot
+- Spring Web
+- Spring Data JPA
+- Spring Security
+- JWT (`jjwt`)
+- MySQL
+- H2 para tests
+
+## Base URL
+
+```text
+http://localhost:8080
+```
+
+## Codigos HTTP frecuentes
 
 - `200 OK`
 - `201 Created`
 - `204 No Content`
 - `400 Bad Request`
+- `401 Unauthorized`
+- `403 Forbidden`
 - `404 Not Found`
+- `409 Conflict`
 
-## Base URL
+## Seguridad
 
-```text
-http://localhost:8080/productos
+La API usa autenticacion stateless con JWT.
+
+- `POST /auth/register` permite registrar usuarios
+- `POST /auth/login` autentica por username o email y devuelve token
+- el token se envia en el header `Authorization: Bearer <token>`
+- las contrasenas se almacenan con `BCrypt`
+
+### Roles
+
+- `COMPRADOR`
+- `VENDEDOR`
+- `ADMIN`
+
+### Reglas actuales
+
+- `GET /productos` y `GET /categorias`: publicos
+- `POST` y `PUT` sobre productos/categorias: `ADMIN` o `VENDEDOR`
+- `DELETE` sobre productos/categorias: `ADMIN`
+- `/auth/**`: publico
+
+## Endpoints principales
+
+### Registro
+
+`POST /auth/register`
+
+```json
+{
+  "username": "vendedor1",
+  "nombre": "Juan",
+  "apellido": "Perez",
+  "email": "juan@movies.com",
+  "password": "123456",
+  "rol": "VENDEDOR",
+  "direccion": "Calle 123"
+}
 ```
 
-Otras rutas disponibles:
+Respuesta esperada:
 
-```text
-http://localhost:8080/categorias
-http://localhost:8080/usuarios
+```json
+{
+  "token": "jwt",
+  "tipo": "Bearer",
+  "usuarioId": 1,
+  "username": "vendedor1",
+  "rol": "VENDEDOR"
+}
 ```
 
-## Crear pelicula
+### Login
 
-`POST http://localhost:8080/productos`
+`POST /auth/login`
 
-Pegar este JSON para probar:
+```json
+{
+  "usernameOrEmail": "vendedor1",
+  "password": "123456"
+}
+```
+
+Tambien se puede usar el email:
+
+```json
+{
+  "usernameOrEmail": "juan@movies.com",
+  "password": "123456"
+}
+```
+
+### Crear producto
+
+`POST /productos`
+
+Requiere `Bearer Token` de un usuario `VENDEDOR` o `ADMIN`.
 
 ```json
 {
@@ -35,38 +114,37 @@ Pegar este JSON para probar:
   "descripcion": "Pelicula de ciencia ficcion dirigida por Christopher Nolan",
   "precio": 15.99,
   "stock": 8,
-  "imagenUrl": "https://image.tmdb.org/t/p/w500/interstellar.jpg"
+  "imagenUrl": "https://image.tmdb.org/t/p/w500/interstellar.jpg",
+  "categoria": {
+    "id": 1
+  }
 }
 ```
 
-Posibles respuestas:
+### Consultar productos
 
-- `201 Created`
-- `400 Bad Request` si el body esta mal enviado
+`GET /productos`
 
-## Consultar peliculas
+### Buscar y filtrar productos
 
-`GET http://localhost:8080/productos`
+Ejemplos:
 
-Posibles respuestas:
+```text
+GET /productos?nombre=dark
+GET /productos?categoriaId=1
+GET /productos?precioMin=10&precioMax=20
+GET /productos?disponibles=true
+```
 
-- `200 OK`
+### Categorias
 
-## Buscar y filtrar peliculas
+- `GET /categorias`
+- `GET /categorias/{id}`
+- `POST /categorias`
+- `PUT /categorias/{id}`
+- `DELETE /categorias/{id}`
 
-`GET http://localhost:8080/productos?nombre=dark`
-
-`GET http://localhost:8080/productos?categoriaId=1`
-
-`GET http://localhost:8080/productos?precioMin=10&precioMax=20`
-
-`GET http://localhost:8080/productos?disponibles=true`
-
-## Crear categoria
-
-`POST http://localhost:8080/categorias`
-
-Pegar este JSON para probar:
+Ejemplo de alta:
 
 ```json
 {
@@ -75,15 +153,15 @@ Pegar este JSON para probar:
 }
 ```
 
-## Consultar categorias
+### Usuarios
 
-`GET http://localhost:8080/categorias`
+- `GET /usuarios`
+- `GET /usuarios/{id}`
+- `POST /usuarios`
+- `PUT /usuarios/{id}`
+- `DELETE /usuarios/{id}`
 
-## Crear usuario
-
-`POST http://localhost:8080/usuarios`
-
-Pegar este JSON para probar:
+Ejemplo:
 
 ```json
 {
@@ -97,93 +175,75 @@ Pegar este JSON para probar:
 }
 ```
 
-## Consultar usuarios
+## Como probar en Insomnia o Postman
 
-`GET http://localhost:8080/usuarios`
+1. Registrar un usuario con `POST /auth/register`
+2. Copiar el valor de `token` de la respuesta
+3. En una request protegida, ir a `Auth > Bearer Token`
+4. Pegar el token sin comillas
+5. Enviar la request
 
-## Consultar pelicula por ID
+Pruebas sugeridas:
 
-`GET http://localhost:8080/productos/1`
-
-Posibles respuestas:
-
-- `200 OK`
-- `404 Not Found` si no existe el id
-
-## Actualizar pelicula
-
-`PUT http://localhost:8080/productos/1`
-
-Pegar este JSON para probar:
-
-```json
-{
-  "nombre": "Interstellar Edicion Especial",
-  "descripcion": "Blu-ray coleccionable",
-  "precio": 19.99,
-  "stock": 5
-}
-```
-
-Posibles respuestas:
-
-- `200 OK`
-- `404 Not Found` si no existe el id
-- `400 Bad Request` si el body esta mal enviado
-
-## Eliminar pelicula
-
-`DELETE http://localhost:8080/productos/1`
-
-Posibles respuestas:
-
-- `204 No Content`
-- `404 Not Found` si no existe el id
+- `GET /productos` sin token: debe funcionar
+- `POST /productos` sin token: debe bloquear
+- `POST /productos` con `COMPRADOR`: debe devolver `403`
+- `POST /productos` con `VENDEDOR` o `ADMIN`: debe crear
 
 ## Base de datos
 
-- Base SQL: `MySQL`
-- Tipo: externa
-- URL por defecto: `jdbc:mysql://localhost:3306/moviesdb?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=America/Argentina/Buenos_Aires`
-- Variables de entorno opcionales:
-  - `DB_URL`
-  - `DB_USERNAME`
-  - `DB_PASSWORD`
+- Motor principal: `MySQL`
+- Base por defecto: `moviesdb`
+- URL por defecto:
+
+```text
+jdbc:mysql://localhost:3306/moviesdb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Argentina/Buenos_Aires
+```
+
+### Variables de entorno opcionales
+
+- `DB_URL`
+- `DB_USERNAME`
+- `DB_PASSWORD`
+- `JWT_SECRET`
+- `JWT_EXPIRATION_MS`
 
 ## Scripts SQL
 
-- `src/main/resources/schema.sql`: crea las tablas `categoria`, `usuario`, `producto`, `carrito`, `item_carrito`, `orden` y `detalle_orden`
-- `src/main/resources/data.sql`: carga datos iniciales y relaciones de ejemplo
+- [schema.sql](c:/Users/Usuario/Desktop/movies/src/main/resources/schema.sql): crea las tablas `categoria`, `usuario`, `producto`, `carrito`, `item_carrito`, `orden` y `detalle_orden`
+- [data.sql](c:/Users/Usuario/Desktop/movies/src/main/resources/data.sql): carga datos iniciales
 
-## Dependencias usadas
+## Modelo de datos
 
-- `spring-boot-starter-web`
-- `spring-boot-starter-data-jpa`
-- `mysql-connector-j`
-- `spring-boot-starter-test`
-
-## ORM
-
-Se usa JPA/Hibernate para mapear las entidades principales del ecommerce:
+Relaciones principales:
 
 - `Producto` pertenece a una `Categoria`
-- `Producto` incluye `imagenUrl` para mostrar la fotografia
 - `Carrito` pertenece a un `Usuario`
 - `ItemCarrito` relaciona `Carrito` con `Producto`
 - `Orden` pertenece a un `Usuario`
 - `DetalleOrden` relaciona `Orden` con `Producto`
-- `Usuario` incluye `username` y `rol` para distinguir comprador, vendedor o admin
+- `Usuario` tiene `rol` para distinguir permisos
 
 ## Ejecutar el proyecto
 
-Primero crear la base en MySQL:
+Si hace falta, crear la base:
 
 ```sql
 CREATE DATABASE moviesdb;
 ```
 
-En Windows:
+Ejecutar en Windows:
 
 ```powershell
 .\mvnw.cmd spring-boot:run
+```
+
+## Tests
+
+Los tests usan H2 en memoria para no depender de una instancia local de MySQL.
+
+Ejecutar:
+
+```powershell
+.\mvnw.cmd test
 ```
