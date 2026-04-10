@@ -1,38 +1,34 @@
-# E-commerce de Peliculas
+E-commerce de Peliculas
 
 API REST desarrollada con Spring Boot para la gestion de usuarios, categorias, productos, carrito y ordenes, con persistencia en MySQL y seguridad con JWT.
 
+Base URL
 
-## Base URL
-
-```text
 http://localhost:8080
-```
 
+POST /auth/register permite registrar usuarios
+POST /auth/login autentica por username o email y devuelve token
+el token se envia en el header Authorization: Bearer <token>
+las contrasenas se almacenan con BCrypt
 
-- `POST /auth/register` permite registrar usuarios
-- `POST /auth/login` autentica por username o email y devuelve token
-- el token se envia en el header `Authorization: Bearer <token>`
-- las contrasenas se almacenan con `BCrypt`
+Roles
 
-### Roles
+COMPRADOR
+VENDEDOR
+ADMIN
 
-- `COMPRADOR`
-- `VENDEDOR`
-- `ADMIN`
+Reglas actuales
 
-### Reglas actuales
+GET /productos y GET /categorias: publicos
+POST y PUT sobre productos/categorias: ADMIN o VENDEDOR
+DELETE sobre productos/categorias: ADMIN
+/auth/**: publico
 
-- `GET /productos` y `GET /categorias`: publicos
-- `POST` y `PUT` sobre productos/categorias: `ADMIN` o `VENDEDOR`
-- `DELETE` sobre productos/categorias: `ADMIN`
-- `/auth/**`: publico
+Endpoints principales
 
-## Endpoints principales
+Registro
 
-### Registro
-
-`POST /auth/register`
+POST /auth/register
 
 ```json
 {
@@ -58,9 +54,9 @@ Respuesta esperada:
 }
 ```
 
-### Login
+Login
 
-`POST /auth/login`
+POST /auth/login
 
 ```json
 {
@@ -78,11 +74,11 @@ Tambien se puede usar el email:
 }
 ```
 
-### Crear producto
+Crear producto
 
-`POST /productos`
+POST /productos
 
-Requiere `Bearer Token` de un usuario `VENDEDOR` o `ADMIN`.
+Requiere Bearer Token de un usuario VENDEDOR o ADMIN.
 
 ```json
 {
@@ -97,11 +93,11 @@ Requiere `Bearer Token` de un usuario `VENDEDOR` o `ADMIN`.
 }
 ```
 
-### Consultar productos
+Consultar productos
 
-`GET /productos`
+GET /productos
 
-### Buscar y filtrar productos
+Buscar y filtrar productos
 
 Ejemplos:
 
@@ -112,13 +108,13 @@ GET /productos?precioMin=10&precioMax=20
 GET /productos?disponibles=true
 ```
 
-### Categorias
+Categorias
 
-- `GET /categorias`
-- `GET /categorias/{id}`
-- `POST /categorias`
-- `PUT /categorias/{id}`
-- `DELETE /categorias/{id}`
+GET /categorias
+GET /categorias/{id}
+POST /categorias
+PUT /categorias/{id}
+DELETE /categorias/{id}
 
 Ejemplo de alta:
 
@@ -129,13 +125,13 @@ Ejemplo de alta:
 }
 ```
 
-### Usuarios
+Usuarios
 
-- `GET /usuarios`
-- `GET /usuarios/{id}`
-- `POST /usuarios`
-- `PUT /usuarios/{id}`
-- `DELETE /usuarios/{id}`
+GET /usuarios
+GET /usuarios/{id}
+POST /usuarios
+PUT /usuarios/{id}
+DELETE /usuarios/{id}
 
 Ejemplo:
 
