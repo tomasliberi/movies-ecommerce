@@ -1,9 +1,11 @@
 package com.liberi.movies.controller;
 
+import com.liberi.movies.dto.ApiMessageResponse;
 import com.liberi.movies.model.Usuario;
 import com.liberi.movies.service.UsuarioService;
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,8 +48,8 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void eliminar(@PathVariable Long id) {
+    public ResponseEntity<ApiMessageResponse> eliminar(@PathVariable Long id) {
         usuarioService.eliminar(id);
+        return ResponseEntity.ok(new ApiMessageResponse(HttpStatus.OK.value(), "Usuario eliminado correctamente"));
     }
 }
