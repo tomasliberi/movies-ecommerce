@@ -3,6 +3,7 @@ package com.liberi.movies.service;
 import com.liberi.movies.model.Categoria;
 import com.liberi.movies.repository.CategoriaRepository;
 import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -39,6 +40,14 @@ public class CategoriaService {
 
     public void eliminar(Long id) {
         Categoria categoria = obtenerPorId(id);
-        categoriaRepository.delete(categoria);
+        try {
+            categoriaRepository.delete(categoria);
+            categoriaRepository.flush();
+        } catch (DataIntegrityViolationException ex) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "No se puede eliminar la categoria porque esta asociada a uno o mas productos"
+            );
+        }
     }
 }

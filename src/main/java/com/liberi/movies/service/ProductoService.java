@@ -3,6 +3,7 @@ package com.liberi.movies.service;
 import com.liberi.movies.model.Producto;
 import com.liberi.movies.repository.ProductoRepository;
 import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -49,6 +50,14 @@ public class ProductoService {
 
     public void eliminar(Long id) {
         Producto producto = obtenerPorId(id);
-        productoRepository.delete(producto);
+        try {
+            productoRepository.delete(producto);
+            productoRepository.flush();
+        } catch (DataIntegrityViolationException ex) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "No se puede eliminar el producto porque esta asociado a otras entidades"
+            );
+        }
     }
 }
