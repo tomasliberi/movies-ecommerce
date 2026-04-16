@@ -11,33 +11,33 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class ProductoService {
 
-    private final ProductoRepository productoRepository;
+    private final ProductoRepository productoRepository; // Repo para acceder a los productos en la bd 
 
     public ProductoService(ProductoRepository productoRepository) {
         this.productoRepository = productoRepository;
     }
 
-    public List<Producto> obtenerTodos() {
+    public List<Producto> obtenerTodos() { // Obtiene todos los productos. (catalogo)
         return productoRepository.findAll();
     }
 
     public List<Producto> buscarProductos(String nombre, Long categoriaId, Double precioMin, Double precioMax,
                                           Boolean disponibles) {
         return productoRepository.buscarConFiltros(nombre, categoriaId, precioMin, precioMax,
-                Boolean.TRUE.equals(disponibles));
+                Boolean.TRUE.equals(disponibles)); // Busca productos con filtros opcionales
     }
 
-    public Producto obtenerPorId(Long id) {
+    public Producto obtenerPorId(Long id) { // Busca la pelicula por el ID, 
         return productoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado"));
     }
 
-    public Producto crear(Producto producto) {
+    public Producto crear(Producto producto) { // Funcion para crear una pelicula, se asegura que el user no ponga un id para que no haya errores
         producto.setId(null);
         return productoRepository.save(producto);
     }
 
-    public Producto actualizar(Long id, Producto productoActualizado) {
+    public Producto actualizar(Long id, Producto productoActualizado) { // Actualizar pelicula
         Producto productoExistente = obtenerPorId(id);
         productoExistente.setNombre(productoActualizado.getNombre());
         productoExistente.setDescripcion(productoActualizado.getDescripcion());
@@ -52,7 +52,7 @@ public class ProductoService {
         Producto producto = obtenerPorId(id);
         try {
             productoRepository.delete(producto);
-            productoRepository.flush();
+            productoRepository.flush(); // Se asegura de que se borre al momento para que si hay error quede en el catch 
         } catch (DataIntegrityViolationException ex) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,

@@ -2,6 +2,10 @@ E-commerce de Peliculas
 
 API REST desarrollada con Spring Boot para la gestion de usuarios, categorias, productos, carrito y ordenes, con persistencia en MySQL y seguridad con JWT.
 
+Documentacion adicional:
+
+- [Diagrama de flujo del usuario](docs/diagrama-flujo-usuario.md)
+
 Base URL
 
 http://localhost:8080

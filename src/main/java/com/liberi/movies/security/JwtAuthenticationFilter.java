@@ -25,7 +25,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter { // Filtro qu
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) // Recibe , la solicitud, la respuesta y el filtro de cadena para continuar con el proceso de filtrado
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) // Recibe la solicitud, la respuesta y el filtro de cadena para continuar con el proceso de filtrado
             throws ServletException, IOException {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION); // Obtiene el encabezado de autorización de la solicitud, que se espera que contenga el token JWT
         if (authHeader == null || !authHeader.startsWith("Bearer ")) { // Si el encabezado es nulo o no comienza con "Bearer " no lo procesa
@@ -37,16 +37,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter { // Filtro qu
         String username = jwtService.extraerUsername(token); // Extrae el username del token usando el JWTService 
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) { // Revisa que no sea nulo y que no haya sido autenticado 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username); // Carga los detalles del usuario usando el CustomUserDetailsService, que busca el usuario en la base de datos por el username extraido del token
             if (jwtService.esTokenValido(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities()
+                                userDetails, // Detalles de user
+                                null, // No se necesita la contraseña para la autenticación basada en token
+                                userDetails.getAuthorities() // Roles del user 
                         );
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); // Establece los detalles de la autenticación con la información de la solicitud actual
+                SecurityContextHolder.getContext().setAuthentication(authentication); // Esto le dice a Spring que el user ya ha sido autenticado y que lo guarde como el user actual 
             }
         }
 

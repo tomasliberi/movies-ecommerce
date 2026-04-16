@@ -10,16 +10,16 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JsonAccessDeniedHandler implements AccessDeniedHandler {
+public class JsonAccessDeniedHandler implements AccessDeniedHandler { // Esta clase se encarga de manejar los casos en los que un usuario autenticado intenta acceder a un recurso para el cual no tiene permisos
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
                        AccessDeniedException accessDeniedException) throws IOException {
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        response.getWriter().write("""
-                {"status":403,"mensaje":"Acceso denegado para este recurso"}
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN); // Establece el código de estado HTTP a 403 Forbidden para indicar que el acceso ha sido denegado
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE); // Establece el tipo de contenido de la respuesta para devolver json
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name()); // Asegura que los caracteres especiales se vean bien
+        response.getWriter().write(""" 
+                {"status":403,"mensaje":"Acceso denegado para este recurso"} // Escribe un mensaje JSON en la respuesta indicando que el acceso ha sido denegado
                 """);
     }
 }
